@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Windows.Forms;
 
 namespace AdventOfCode2020
 {
@@ -12,9 +13,12 @@ namespace AdventOfCode2020
             return text;
         }
 
+        [STAThread]
         static void Main(string[] args)
         {
-            Console.WriteLine(RunDay1());
+            var answer = RunDay3();
+            Console.WriteLine(answer);
+            Clipboard.SetText(answer);
             Console.ReadLine();
         }
 
@@ -25,9 +29,13 @@ namespace AdventOfCode2020
 
         static string RunDay2()
         {
-            return Day2.Run(Day2.input).ToString();
-            //return Day2.Run(GetInput(2)).ToString();
+            //return Day2.Run(Day2.input).ToString();
+            return Day2.RunPart2(GetInput(2)).ToString();
         }
 
+        static string RunDay3()
+        {
+            return Day3.Run(GetInput(3)).ToString();
+        }
     }
 }
