@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace AdventOfCode2020
@@ -17,6 +18,7 @@ namespace AdventOfCode2020
                 if (splitsTracker == splits.Length)
                 {
                     tokens.Add(remainingString);
+                    PrintTokens(tokens);
                     return tokens;
                 }
                 if (remainingString.StartsWith(splits[splitsTracker])) {
@@ -33,7 +35,17 @@ namespace AdventOfCode2020
                     inputTracker++;
                 }
             }
+            PrintTokens(tokens);
             return tokens;
+        }
+
+        static void PrintTokens(List<string> tokens)
+        {
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                Console.WriteLine("Token " + i.ToString() + ": " + tokens[i]);
+            }
+            Console.WriteLine();
         }
     }
 }

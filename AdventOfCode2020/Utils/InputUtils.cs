@@ -11,7 +11,15 @@ namespace AdventOfCode2020
         public static string[] SplitLinesIntoStringArray(string input)
         {
             var lines = Regex.Split(input, "\r\n|\r|\n");
-            return lines;
+            var nonBlank = new List<string>();
+            foreach(var line in lines)
+            {
+                if (line.Length > 0)
+                {
+                    nonBlank.Add(line);
+                }
+            }
+            return nonBlank.ToArray();
         }
 
         public static List<int> SplitLinesIntoIntList(string input)
