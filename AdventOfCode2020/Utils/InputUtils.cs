@@ -29,6 +29,13 @@ namespace AdventOfCode2020
             return myInts.ToList();
         }
 
+        public static List<long> SplitLinesIntoLongList(string input)
+        {
+            var lines = Regex.Split(input, "\r\n|\r|\n");
+            long[] myLongs = Array.ConvertAll(lines, long.Parse);
+            return myLongs.ToList();
+        }
+
         public static List<int> SplitLineIntoIntList(string input)
         {
             var stringInts = Regex.Split(input, " ");
