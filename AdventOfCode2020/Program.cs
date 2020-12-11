@@ -16,7 +16,7 @@ namespace AdventOfCode2020
         [STAThread]
         static void Main(string[] args)
         {
-            var answer = RunDay9();
+            var answer = RunDay10();
             //var answer = Day5.GetRow("FBFBBF").ToString();
             //var answer = Day5.GetCol("RLR").ToString();
             //var answer = Day5.GetSeat("BBFFBBFRLL").ToString();
@@ -70,5 +70,10 @@ namespace AdventOfCode2020
         {
             return Day9.Run(GetInput(9)).ToString();
         }
+        static string RunDay10()
+        {
+            return Day10Part2.Run(GetInput(10)).ToString();
+        }
+
     }
 }

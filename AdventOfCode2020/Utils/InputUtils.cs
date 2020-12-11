@@ -25,6 +25,10 @@ namespace AdventOfCode2020
         public static List<int> SplitLinesIntoIntList(string input)
         {
             var lines = Regex.Split(input, "\r\n|\r|\n");
+            if (lines[lines.Length - 1].Length == 0)
+            {
+                lines = lines.SkipLast(1).ToArray();
+            }
             int[] myInts = Array.ConvertAll(lines, int.Parse);
             return myInts.ToList();
         }
