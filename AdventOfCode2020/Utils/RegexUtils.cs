@@ -12,13 +12,13 @@ namespace AdventOfCode2020
          * ^amb|blu|brn|gry|grn|hzl|oth$ - specific enum values
          */
         public static bool IsMatch(string pattern, string input)
-{
-    Regex rx = new Regex(pattern);
-    if (!rx.IsMatch(input))
-    {
-        return false;
+        {
+            Regex rx = new Regex(pattern);
+            if (!rx.IsMatch(input))
+            {
+                return false;
+            }
+            return true;
+        }
     }
-    return true;
-}
-}
 }

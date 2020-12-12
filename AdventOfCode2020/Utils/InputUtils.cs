@@ -58,16 +58,6 @@ namespace AdventOfCode2020
                     continue;
                 }
                 var tokens = StringUtils.SplitInOrder(line, new string[] { "-", " ", ": " });
-                //var index = 0;
-                //var minStr = line.Substring(index, line.IndexOf("-"));
-                //var min = Int32.Parse(minStr);
-                //index += minStr.Length + 1;
-                //var maxStr = line.Substring(index, line.IndexOf(" ") - index);
-                //var max = Int32.Parse(maxStr);
-                //index += maxStr.Length + 1;
-                //var letter = line[index].ToString();
-                //index += 3;
-                //var password = line.Substring(index, line.Length - index);
                 var passwordSet = new Day2PasswordSet
                 {
                     Min = int.Parse(tokens[0]),
@@ -101,10 +91,5 @@ namespace AdventOfCode2020
             }
             return new string[] { input };
         }
-
-        //public static string[] SplitLineByLFAndColon(string inputLine)
-        //{
-        //    return inputLine.Split(new char[] { '\r', ':' });
-        //}
     }
 }
