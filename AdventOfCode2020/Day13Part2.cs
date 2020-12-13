@@ -1,6 +1,7 @@
 ﻿using AdventOfCode2020.Models;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -13,72 +14,97 @@ namespace AdventOfCode2020
 67,7,x,59,61";
 
         public static Dictionary<int, int> busNums = new Dictionary<int, int>();
+        public static List<int> _buses = new List<int>();
 
         public static long Run(string input)
         {
-            input = _input;
+            var minIteration = 127064803049;
+            //var minIteration = (long)1;
+            //input = _input;
             var lines = InputUtils.SplitLinesIntoStringArray(input);
-            var buses = SplitCSVLineIntoIntList(lines[1]);
-            var maxBus = buses.Max();
-            var maxBusPos = buses.IndexOf(maxBus);
-            for (int i = 0; i < buses.Count; i++)
+            _buses = SplitCSVLineIntoIntList(lines[1]);
+            var maxBus = _buses.Max();
+            var maxBusPos = _buses.IndexOf(maxBus);
+            var firstBus = _buses[0];
+            var iteration = GetFirstIteration(firstBus, maxBus, maxBusPos, minIteration);
+
+            for (int i = 0; i < _buses.Count; i++)
             {
-                if (buses[i] > -1)
+                if (_buses[i] > -1)
                 {
-                    busNums.Add(buses[i], i);
+                    busNums.Add(_buses[i], i);
                 }
             }
 
-            var iteration = (long)1;
+            _buses.RemoveAll(x => x == -1);
+            _buses.Sort();
+            _buses.Reverse();
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             while (true)
             {
                 long timestamp = maxBus * iteration - maxBusPos;
+                //if (timestamp % firstBus > 0)
+                //{
+                //    iteration++;
+                //    continue;
+                //}
                 Console.WriteLine("Timestamp: " + timestamp.ToString());
-                if (IsMatch(timestamp, buses))
+
+                if (IsMatchBusDict(timestamp))
                 {
+                    stopwatch.Stop();
+                    TimeSpan ts = stopwatch.Elapsed;
+                    string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                        ts.Hours, ts.Minutes, ts.Seconds,
+                        ts.Milliseconds / 10);
+                    Console.WriteLine("RunTime: " + elapsedTime);
                     return timestamp;
                 }
-                iteration++;
+                iteration += firstBus;
             }
         }
 
-        public static bool IsMatch(long timestamp, List<int> buses)
+        public static long GetFirstIteration(int firstBus, int maxBus, int maxBusPos, long minIteration)
         {
-            for(int i = 0; i < buses.Count; i++)
+            var found = false;
+            var iteration = minIteration;
+            while (!found)
             {
-                if (buses[i] == -1)
+                var timestamp = maxBus * iteration - maxBusPos;
+                if (timestamp % firstBus == 0)
                 {
-                    continue;
+                    return iteration;
                 }
-                if ((timestamp % buses[i] + i) % buses[i] != 0)
+                iteration++;
+            }
+            return -1;
+        }
+
+        public static bool IsMatchBusDict(long timestamp)
+        {
+            foreach (var bus in busNums)
+            {
+                if ((timestamp % bus.Key + bus.Value) % bus.Key != 0)
                 {
                     return false;
                 }
-                //var waitTime = GetWaitTime(timestamp, buses[i]);
-                //if (waitTime < 0)
-                //{
-                //    return false;
-                //}
-                //if (waitTime != i)
-                //{
-                //    return false;
-                //}
             }
             return true;
         }
 
-        public static int GetWaitTime(long timestamp, int bus)
+        public static bool IsMatchBigBusesFirst(long timestamp)
         {
-            var track = 0;
-            while ((timestamp + track) % bus > 0)
+            foreach(var bus in _buses)
             {
-                track++;
-                if (track > bus)
+                if ((timestamp % bus + busNums[bus]) % bus != 0)
                 {
-                    return -1;
+                    return false;
                 }
             }
-            return track;
+            return true;
         }
 
         public static List<int> SplitCSVLineIntoIntList(string input)
