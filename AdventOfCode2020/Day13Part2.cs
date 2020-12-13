@@ -15,18 +15,22 @@ namespace AdventOfCode2020
 
         public static Dictionary<int, int> busNums = new Dictionary<int, int>();
         public static List<int> _buses = new List<int>();
+        public static List<int> _busesNotFound = new List<int>();
 
         public static long Run(string input)
         {
-            var minIteration = 127064803049;
-            //var minIteration = (long)1;
-            //input = _input;
+            //var minIteration = 127064803049;
+            var minIteration = (long)1;
+            input = _input;
             var lines = InputUtils.SplitLinesIntoStringArray(input);
             _buses = SplitCSVLineIntoIntList(lines[1]);
             var maxBus = _buses.Max();
             var maxBusPos = _buses.IndexOf(maxBus);
-            var firstBus = _buses[0];
-            var iteration = GetFirstIteration(firstBus, maxBus, maxBusPos, minIteration);
+
+            var busesCopy = new List<int>(_buses);
+            busesCopy.Remove(maxBus);
+            var secondMaxBus = busesCopy.Max();
+            var cadence = secondMaxBus;
 
             for (int i = 0; i < _buses.Count; i++)
             {
@@ -35,10 +39,15 @@ namespace AdventOfCode2020
                     busNums.Add(_buses[i], i);
                 }
             }
+            var iteration = GetFirstIteration(secondMaxBus, maxBus, maxBusPos, minIteration);
 
             _buses.RemoveAll(x => x == -1);
             _buses.Sort();
             _buses.Reverse();
+
+            _busesNotFound = new List<int>(_buses);
+            _busesNotFound.Remove(maxBus);
+            _busesNotFound.Remove(secondMaxBus);
 
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -63,18 +72,27 @@ namespace AdventOfCode2020
                     Console.WriteLine("RunTime: " + elapsedTime);
                     return timestamp;
                 }
-                iteration += firstBus;
+                //var _busesNotFoundCopy = new List<int>(_busesNotFound);
+                //foreach(var checkBus in _busesNotFoundCopy)
+                //{
+                //    if (timestamp % checkBus - busNums[checkBus] == 0)
+                //    {
+                //        cadence *= checkBus;
+                //        _busesNotFound.Remove(checkBus);
+                //    }
+                //}
+                iteration += cadence;
             }
         }
 
-        public static long GetFirstIteration(int firstBus, int maxBus, int maxBusPos, long minIteration)
+        public static long GetFirstIteration(int secondMaxBus, int maxBus, int maxBusPos, long minIteration)
         {
             var found = false;
             var iteration = minIteration;
             while (!found)
             {
                 var timestamp = maxBus * iteration - maxBusPos;
-                if (timestamp % firstBus == 0)
+                if ((timestamp  + busNums[secondMaxBus]) % secondMaxBus == 0)
                 {
                     return iteration;
                 }
