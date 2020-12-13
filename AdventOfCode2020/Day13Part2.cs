@@ -19,9 +19,9 @@ namespace AdventOfCode2020
 
         public static long Run(string input)
         {
-            //var minIteration = 127064803049;
-            var minIteration = (long)1;
-            input = _input;
+            var minIteration = 127064803049;
+            //var minIteration = (long)1;
+            //input = _input;
             var lines = InputUtils.SplitLinesIntoStringArray(input);
             _buses = SplitCSVLineIntoIntList(lines[1]);
             var maxBus = _buses.Max();
@@ -30,7 +30,7 @@ namespace AdventOfCode2020
             var busesCopy = new List<int>(_buses);
             busesCopy.Remove(maxBus);
             var secondMaxBus = busesCopy.Max();
-            var cadence = secondMaxBus;
+            long cadence = secondMaxBus;
 
             for (int i = 0; i < _buses.Count; i++)
             {
@@ -72,15 +72,15 @@ namespace AdventOfCode2020
                     Console.WriteLine("RunTime: " + elapsedTime);
                     return timestamp;
                 }
-                //var _busesNotFoundCopy = new List<int>(_busesNotFound);
-                //foreach(var checkBus in _busesNotFoundCopy)
-                //{
-                //    if (timestamp % checkBus - busNums[checkBus] == 0)
-                //    {
-                //        cadence *= checkBus;
-                //        _busesNotFound.Remove(checkBus);
-                //    }
-                //}
+                var _busesNotFoundCopy = new List<int>(_busesNotFound);
+                foreach (var checkBus in _busesNotFoundCopy)
+                {
+                    if ((timestamp + busNums[checkBus]) % checkBus == 0)
+                    {
+                        cadence *= checkBus;
+                        _busesNotFound.Remove(checkBus);
+                    }
+                }
                 iteration += cadence;
             }
         }
