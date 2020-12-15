@@ -40,9 +40,9 @@ namespace AdventOfCode2020
             return myLongs.ToList();
         }
 
-        public static List<int> SplitLineIntoIntList(string input)
+        public static List<int> SplitLineIntoIntList(string input, string separator)
         {
-            var stringInts = Regex.Split(input, " ");
+            var stringInts = Regex.Split(input, separator);
             int[] myInts = Array.ConvertAll(stringInts, int.Parse);
             return myInts.ToList();
         }

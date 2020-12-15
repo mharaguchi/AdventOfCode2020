@@ -16,7 +16,7 @@ namespace AdventOfCode2020
         [STAThread]
         static void Main(string[] args)
         {
-            var answer = RunDay14();
+            var answer = RunDay15();
 
             Console.WriteLine(answer);
             Clipboard.SetText(answer);
@@ -91,5 +91,10 @@ namespace AdventOfCode2020
         {
             return Day14Part2.Run(GetInput(14)).ToString();
         }
+        static string RunDay15()
+        {
+            return Day15.Run("").ToString();
+        }
+
     }
 }
