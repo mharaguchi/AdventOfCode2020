@@ -43,6 +43,10 @@ namespace AdventOfCode2020
         public static List<int> SplitLineIntoIntList(string input, string separator)
         {
             var stringInts = Regex.Split(input, separator);
+            if (stringInts[stringInts.Length - 1].Length == 0)
+            {
+                stringInts = stringInts.SkipLast(1).ToArray();
+            }
             int[] myInts = Array.ConvertAll(stringInts, int.Parse);
             return myInts.ToList();
         }
