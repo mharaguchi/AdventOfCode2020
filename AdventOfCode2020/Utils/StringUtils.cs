@@ -47,5 +47,15 @@ namespace AdventOfCode2020
             }
             Console.WriteLine();
         }
+
+        public static List<int> StringArrayToIntList(string[] lines)
+        {
+            var intList = new List<int>();
+            foreach(var line in lines)
+            {
+                intList.Add(int.Parse(line));
+            }
+            return intList;
+        }
     }
 }
