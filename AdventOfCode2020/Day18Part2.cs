@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace AdventOfCode2020
 {
-    public static class Day18
+    public static class Day18Part2
     {
         public static string _input = @"((2 + 4 * 9) * (6 + 9 * 8 + 6) + 6) + 2 + 4 * 2";
 
@@ -17,9 +18,69 @@ namespace AdventOfCode2020
             foreach(var line in lines)
             {
                 var lineNoSpaces = line.Replace(" ", "");
-                sum += EvaluateExpression(lineNoSpaces);
+                var lineWithAdditionParens = AddParensAroundAddition(lineNoSpaces);
+                sum += EvaluateExpression(lineWithAdditionParens);
             }
             return sum;
+        }
+
+        public static string AddParensAroundAddition(string line)
+        {
+            var newLine = line;
+            var numPluses = line.Count(x => x == '+');
+            for(int i = 1; i < numPluses + 1; i++)
+            {
+                var plusIndex = GetNthIndex(newLine, '+', i);
+                newLine = AddParens(newLine, plusIndex);
+            }
+            return newLine;
+        }
+
+        public static string AddParens(string line, int targetIndex)
+        {
+            var newLine = line;
+            var index = targetIndex;
+            int openParenIndex = -1;
+            int closeParenIndex = -1;
+            var charBefore = line[index - 1];
+            if (charBefore == ')')
+            {
+                openParenIndex = FindBeginParenIndex(line, index - 1);
+            }
+            else if (charBefore >= '0' && charBefore <= '9')
+            {
+                openParenIndex = targetIndex - 1;
+            }
+            var charAfter = line[index + 1];
+            if (charAfter == '(')
+            {
+                closeParenIndex = FindEndParenIndex(line, index + 1);
+            }
+            else if (charAfter >= '0' && charAfter <= '9')
+            {
+                closeParenIndex = targetIndex + 2;
+            }
+            newLine = newLine.Insert(openParenIndex, "(");
+            newLine = newLine.Insert(closeParenIndex + 1, ")");
+            return newLine;
+        }
+
+        //from StackOverflow
+        public static int GetNthIndex(string s, char t, int n)
+        {
+            int count = 0;
+            for (int i = 0; i < s.Length; i++)
+            {
+                if (s[i] == t)
+                {
+                    count++;
+                    if (count == n)
+                    {
+                        return i;
+                    }
+                }
+            }
+            return -1;
         }
 
         public static long EvaluateExpression(string expr)
@@ -97,6 +158,25 @@ namespace AdventOfCode2020
                 else if (expr[index] == ')')
                 {
                     depth--;
+                }
+            }
+            return index;
+        }
+
+        public static int FindBeginParenIndex(string expr, int endIndex)
+        {
+            var depth = 1;
+            var index = endIndex;
+            while (depth > 0)
+            {
+                index--;
+                if (expr[index] == '(')
+                {
+                    depth--;
+                }
+                else if (expr[index] == ')')
+                {
+                    depth++;
                 }
             }
             return index;
