@@ -121,13 +121,97 @@ Tile 3079:
         {
             input = _input;
             ParseTiles(input);
-            var upperLeft = FindULCorner();
-            var upperRight = FindURCorner();
-            var downLeft = FindDLCorner();
-            var downRight = FindDRCorner();
 
-            long product = (long)upperLeft * (long)upperRight * (long)downLeft * (long)downRight;
-            return product;
+            var corners = new List<Day20Tile>();
+            //Find 4 tiles that have adjacent sides that don't match up with any other tile
+            foreach(var tile in _tiles)
+            {
+                if (IsCorner(tile))
+                {
+                    corners.Add(tile);
+                }
+            }
+
+            //long product = (long)upperLeft * (long)upperRight * (long)downLeft * (long)downRight;
+            return -1;
+        }
+
+
+        public static bool IsCorner(Day20Tile tile)
+        {
+            var tileCopy = new Day20Tile(tile);
+            var otherTiles = _tiles.Where(x => x.TileNum != tile.TileNum);
+
+            for(int i = 0; i < 4; i++)
+            {
+                if (!HasMatch(tileCopy, otherTiles))
+                {
+                    return true;
+                }
+                tileCopy = RotateTileClockwise(tileCopy);
+            }
+            tileCopy = FlipTileHorizontal(tileCopy);
+            for (int i = 0; i < 4; i++)
+            {
+                if (!HasMatch(tileCopy, otherTiles))
+                {
+                    return true;
+                }
+                tileCopy = RotateTileClockwise(tileCopy);
+            }
+
+            //for each flip/rotation combo in the first tile
+            //compare against each flip/rotation combo in the second tile against the top and the left of the first tile
+            return false;
+        }
+
+        public static bool HasMatch(Day20Tile tile, IEnumerable<Day20Tile> otherTiles)
+        {
+            var topHasMatch = otherTiles.Where(x => tile.Top.SequenceEqual(x.Top) || tile.Top.SequenceEqual(x.Bottom) || tile.Top.SequenceEqual(x.Left) ||
+                tile.Top.SequenceEqual(x.Right) || 
+                tile.Top.SequenceEqual(((IEnumerable<bool>)x.Top).Reverse()) ||
+                tile.Top.SequenceEqual(((IEnumerable<bool>)x.Right).Reverse()) ||
+                tile.Top.SequenceEqual(((IEnumerable<bool>)x.Bottom).Reverse()) ||
+                tile.Top.SequenceEqual(((IEnumerable<bool>)x.Left).Reverse())
+                ).Any();
+            var leftHasMatch = otherTiles.Where(x => tile.Left.SequenceEqual(x.Top) || tile.Left.SequenceEqual(x.Bottom) || tile.Left.SequenceEqual(x.Left) ||
+                tile.Left.SequenceEqual(x.Right) ||
+                tile.Left.SequenceEqual(((IEnumerable<bool>)x.Top).Reverse()) ||
+                tile.Left.SequenceEqual(((IEnumerable<bool>)x.Right).Reverse()) ||
+                tile.Left.SequenceEqual(((IEnumerable<bool>)x.Bottom).Reverse()) ||
+                tile.Left.SequenceEqual(((IEnumerable<bool>)x.Left).Reverse())
+                ).Any();
+            if (topHasMatch || leftHasMatch)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        public static Day20Tile RotateTileClockwise(Day20Tile tile)
+        {
+            var newTile = new Day20Tile();
+            newTile.TileNum = tile.TileNum;
+            newTile.Top = new List<bool>(tile.Left);
+            newTile.Top.Reverse();
+            newTile.Right = new List<bool>(tile.Top);
+            newTile.Bottom = new List<bool>(tile.Right);
+            newTile.Bottom.Reverse();
+            newTile.Left = new List<bool>(tile.Bottom);
+            return newTile;
+        }
+
+        public static Day20Tile FlipTileHorizontal(Day20Tile tile)
+        {
+            var newTile = new Day20Tile();
+            newTile.TileNum = tile.TileNum;
+            newTile.Top = new List<bool>(tile.Top);
+            newTile.Top.Reverse();
+            newTile.Right = new List<bool>(tile.Left);
+            newTile.Bottom = new List<bool>(tile.Bottom);
+            newTile.Bottom.Reverse();
+            newTile.Left = new List<bool>(tile.Right);
+            return newTile;
         }
 
         public static int FindULCorner()

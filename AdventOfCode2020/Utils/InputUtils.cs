@@ -36,6 +36,10 @@ namespace AdventOfCode2020
         public static List<long> SplitLinesIntoLongList(string input)
         {
             var lines = Regex.Split(input, "\r\n|\r|\n");
+            if (lines[lines.Length - 1].Length == 0)
+            {
+                lines = lines.SkipLast(1).ToArray();
+            }
             long[] myLongs = Array.ConvertAll(lines, long.Parse);
             return myLongs.ToList();
         }
