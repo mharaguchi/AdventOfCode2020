@@ -119,32 +119,35 @@ Tile 3079:
 
         public static long Run(string input)
         {
-            input = _input;
+            //input = _input;
             ParseTiles(input);
 
             var corners = new List<Day20Tile>();
             //Find 4 tiles that have adjacent sides that don't match up with any other tile
             foreach(var tile in _tiles)
             {
-                if (IsCorner(tile))
+                if (IsPossibleCorner(tile))
                 {
                     corners.Add(tile);
                 }
             }
 
             //long product = (long)upperLeft * (long)upperRight * (long)downLeft * (long)downRight;
-            return -1;
+            long product = (long)corners[0].TileNum * (long)corners[1].TileNum;
+            product *= corners[2].TileNum;
+            product *= corners[3].TileNum;
+            return product;
         }
 
 
-        public static bool IsCorner(Day20Tile tile)
+        public static bool IsPossibleCorner(Day20Tile tile)
         {
             var tileCopy = new Day20Tile(tile);
             var otherTiles = _tiles.Where(x => x.TileNum != tile.TileNum);
 
             for(int i = 0; i < 4; i++)
             {
-                if (!HasMatch(tileCopy, otherTiles))
+                if (HasCornerMatch(tileCopy, otherTiles))
                 {
                     return true;
                 }
@@ -153,7 +156,7 @@ Tile 3079:
             tileCopy = FlipTileHorizontal(tileCopy);
             for (int i = 0; i < 4; i++)
             {
-                if (!HasMatch(tileCopy, otherTiles))
+                if (HasCornerMatch(tileCopy, otherTiles))
                 {
                     return true;
                 }
@@ -165,23 +168,37 @@ Tile 3079:
             return false;
         }
 
-        public static bool HasMatch(Day20Tile tile, IEnumerable<Day20Tile> otherTiles)
+        public static bool HasCornerMatch(Day20Tile tile, IEnumerable<Day20Tile> otherTiles)
         {
-            var topHasMatch = otherTiles.Where(x => tile.Top.SequenceEqual(x.Top) || tile.Top.SequenceEqual(x.Bottom) || tile.Top.SequenceEqual(x.Left) ||
+            var topMatches = otherTiles.Where(x => tile.Top.SequenceEqual(x.Top) || tile.Top.SequenceEqual(x.Bottom) || tile.Top.SequenceEqual(x.Left) ||
                 tile.Top.SequenceEqual(x.Right) || 
                 tile.Top.SequenceEqual(((IEnumerable<bool>)x.Top).Reverse()) ||
                 tile.Top.SequenceEqual(((IEnumerable<bool>)x.Right).Reverse()) ||
                 tile.Top.SequenceEqual(((IEnumerable<bool>)x.Bottom).Reverse()) ||
                 tile.Top.SequenceEqual(((IEnumerable<bool>)x.Left).Reverse())
-                ).Any();
-            var leftHasMatch = otherTiles.Where(x => tile.Left.SequenceEqual(x.Top) || tile.Left.SequenceEqual(x.Bottom) || tile.Left.SequenceEqual(x.Left) ||
+                );
+            var leftMatches = otherTiles.Where(x => tile.Left.SequenceEqual(x.Top) || tile.Left.SequenceEqual(x.Bottom) || tile.Left.SequenceEqual(x.Left) ||
                 tile.Left.SequenceEqual(x.Right) ||
                 tile.Left.SequenceEqual(((IEnumerable<bool>)x.Top).Reverse()) ||
                 tile.Left.SequenceEqual(((IEnumerable<bool>)x.Right).Reverse()) ||
                 tile.Left.SequenceEqual(((IEnumerable<bool>)x.Bottom).Reverse()) ||
                 tile.Left.SequenceEqual(((IEnumerable<bool>)x.Left).Reverse())
-                ).Any();
-            if (topHasMatch || leftHasMatch)
+                );
+            var rightMatches = otherTiles.Where(x => tile.Right.SequenceEqual(x.Top) || tile.Right.SequenceEqual(x.Bottom) || tile.Right.SequenceEqual(x.Right) ||
+    tile.Right.SequenceEqual(x.Left) ||
+    tile.Right.SequenceEqual(((IEnumerable<bool>)x.Top).Reverse()) ||
+    tile.Right.SequenceEqual(((IEnumerable<bool>)x.Right).Reverse()) ||
+    tile.Right.SequenceEqual(((IEnumerable<bool>)x.Bottom).Reverse()) ||
+    tile.Right.SequenceEqual(((IEnumerable<bool>)x.Left).Reverse())
+    );
+            var bottomMatches = otherTiles.Where(x => tile.Bottom.SequenceEqual(x.Top) || tile.Bottom.SequenceEqual(x.Bottom) || tile.Bottom.SequenceEqual(x.Right) ||
+tile.Bottom.SequenceEqual(x.Left) ||
+tile.Bottom.SequenceEqual(((IEnumerable<bool>)x.Top).Reverse()) ||
+tile.Bottom.SequenceEqual(((IEnumerable<bool>)x.Right).Reverse()) ||
+tile.Bottom.SequenceEqual(((IEnumerable<bool>)x.Bottom).Reverse()) ||
+tile.Bottom.SequenceEqual(((IEnumerable<bool>)x.Left).Reverse())
+);
+            if (!topMatches.Any() && !leftMatches.Any() && rightMatches.Any() && bottomMatches.Any())
             {
                 return true;
             }
@@ -192,11 +209,9 @@ Tile 3079:
         {
             var newTile = new Day20Tile();
             newTile.TileNum = tile.TileNum;
-            newTile.Top = new List<bool>(tile.Left);
-            newTile.Top.Reverse();
+            newTile.Top = new List<bool>(((IEnumerable<bool>)tile.Left).Reverse());
             newTile.Right = new List<bool>(tile.Top);
-            newTile.Bottom = new List<bool>(tile.Right);
-            newTile.Bottom.Reverse();
+            newTile.Bottom = new List<bool>(((IEnumerable<bool>)tile.Right).Reverse());
             newTile.Left = new List<bool>(tile.Bottom);
             return newTile;
         }
@@ -205,11 +220,9 @@ Tile 3079:
         {
             var newTile = new Day20Tile();
             newTile.TileNum = tile.TileNum;
-            newTile.Top = new List<bool>(tile.Top);
-            newTile.Top.Reverse();
+            newTile.Top = new List<bool>(((IEnumerable<bool>)tile.Top).Reverse());
             newTile.Right = new List<bool>(tile.Left);
-            newTile.Bottom = new List<bool>(tile.Bottom);
-            newTile.Bottom.Reverse();
+            newTile.Bottom = new List<bool>(((IEnumerable<bool>)tile.Bottom).Reverse());
             newTile.Left = new List<bool>(tile.Right);
             return newTile;
         }
@@ -363,6 +376,10 @@ Tile 3079:
             var tileTokens = InputUtils.SplitInputByBlankLines(input);
             foreach(var tileToken in tileTokens)
             {
+                if (tileToken.Length == 0)
+                {
+                    continue;
+                }
                 var newTile = new Day20Tile();
                 var lines = InputUtils.SplitLinesIntoStringArray(tileToken);
                 newTile.TileNum = int.Parse(StringUtils.SplitInOrder(lines[0], new string[] {"Tile ", ":"})[0]);
@@ -370,10 +387,39 @@ Tile 3079:
                 {
                     newTile.Top.Add(lines[1][i] == '#');
                     newTile.Bottom.Add(lines[lines.Length - 1][i] == '#');
-                    newTile.Left.Add(lines[i][0] == '#');
-                    newTile.Right.Add(lines[i][lines[1].Length - 1] == '#');
+                    newTile.Left.Add(lines[i+1][0] == '#');
+                    newTile.Right.Add(lines[i+1][lines[1].Length - 1] == '#');
                 }
                 _tiles.Add(newTile);
+            }
+        }
+
+        public static void PrintTiles()
+        {
+            foreach (var tile in _tiles)
+            {
+                Console.WriteLine($"Tile {tile.TileNum}: ");
+                for (int i = 0; i < 10; i++)
+                {
+                    for (int j = 0; j < 10; j++)
+                    {
+                        if (i == 0 && j == 0)
+                        {
+                            if (tile.Top[0] != tile.Left[0])
+                            {
+                                Console.Write("X");
+                            }
+                            else
+                            {
+                                if (tile.Top[0])
+                                {
+                                    Console.Write("#");
+                                }
+                            }
+                        }
+                        Console.WriteLine();
+                    }
+                }
             }
         }
     }
